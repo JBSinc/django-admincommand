@@ -22,10 +22,12 @@ class CommandQuerySet(ListQuerySet):
 
     def filter(self, *args, **kwargs):
         all_commands = []
-        for command in AdminCommand.all():
-            # only list commands that the user can run
-            # to avoid useless 503 messages
-            full_permission_codename = "admincommand.%s" % command.permission_codename()
-            if self.user.has_perm(full_permission_codename):
-                all_commands.append(command)
+        # Only display commands on DEBUG mode
+        if settings.DEBUG:
+            for command in AdminCommand.all():
+                # only list commands that the user can run
+                # to avoid useless 503 messages
+                full_permission_codename = "admincommand.%s" % command.permission_codename()
+                if self.user.has_perm(full_permission_codename):
+                    all_commands.append(command)
         return type(self)(self.user, all_commands)

@@ -5,21 +5,20 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import csrf_protect_m
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext
 
 from admincommand import core
-from admincommand.models import AdminCommand as AdminCommandModel
+from admincommand.models import AdminCommandRunInstance, AdminCommand
 from admincommand.query import CommandQuerySet
-from sneak.admin import SneakAdmin
 
-
-class AdminCommandAdmin(SneakAdmin):
+@admin.register(AdminCommand)
+class AdminCommandAdmin(admin.ModelAdmin):
     list_display = ("command_name",)
 
     def get_queryset(self, request):
@@ -63,9 +62,14 @@ class AdminCommandAdmin(SneakAdmin):
         if request.method == "POST":
             form = admin_command.form(request.POST, request.FILES, command=admin_command)
             if form.is_valid():
-                coreponse = core.run_command(admin_command, form.cleaned_data, request.user)
+                coreponse, instance = core.run_command(
+                    admin_command,
+                    form.cleaned_data,
+                    request.user
+                )
                 if not admin_command.asynchronous:
                     ctx["output"] = coreponse
+                    ctx['instance'] = instance
                     return render(request, "admincommand/output.html", ctx)
                 else:
                     msg = ugettext(
@@ -82,6 +86,7 @@ class AdminCommandAdmin(SneakAdmin):
         ctx["media"] = mark_safe(ctx["form"].media.render())
         return render(request, "admincommand/run.html", ctx)
 
+    @mark_safe
     def command_name(self, obj):
         """
         Used to populate admin change list row with a link to
@@ -94,8 +99,29 @@ class AdminCommandAdmin(SneakAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        extra_context = {"title": u"Sélectionner une commande à lancer"}
+        extra_context = {"title": "Select a command to run:"}
         return super(AdminCommandAdmin, self).changelist_view(request, extra_context)
 
+    def has_add_permission(self, request, obj=None):
+        return False
 
-admin.site.register(AdminCommandModel, AdminCommandAdmin)
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(AdminCommandRunInstance)
+class AdminCommandRunInstanceAdmin(admin.ModelAdmin):
+    list_display = ('command_name', 'runner_user', 'has_exception', 'executed_at', 'finished_at')
+    raw_id_fields = ('runner_user',)
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

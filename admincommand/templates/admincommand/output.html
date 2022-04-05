@@ -1,7 +1,7 @@
 {% extends "admin/change_form.html" %}
 
 
-{% load i18n %}
+{% load i18n static %}
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
@@ -15,4 +15,9 @@
 <code><pre>
 {{ output|safe }}
 </pre></code>
+    
+<br>
+<br>
+The details for this execution can be seen <a href="{% url 'admin:admincommand_admincommandruninstance_change' instance.id %}">here</a>.
+
 {% endblock %}

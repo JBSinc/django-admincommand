@@ -18,7 +18,8 @@ class GenericCommandForm(forms.Form):
 
         self.command = command
 
-        default_actions = ("help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color")
+        default_actions = ("help", "version", "verbosity", "settings", "pythonpath", "traceback",
+                           "no_color", 'force_color', 'skip_checks')
         # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
         actions = self.command.command().create_parser("", None)._actions
         # Example

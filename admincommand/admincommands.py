@@ -5,5 +5,3 @@ from admincommand.models import AdminCommand
 # admincommands and the form class name must be the same as the management command file name
 # (with camel case converted to underscore notation)
 
-class UpdateXmlFeeds(AdminCommand):
-    pass

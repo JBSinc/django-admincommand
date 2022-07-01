@@ -15,7 +15,7 @@ def sync_db_callback(verbosity=0, interactive=False, signal=None, **kwargs):
     to use the app. This needs to be done manually because the app doesn't
     expose any concrete models.
     """
-
+    print('Post migrate for admin commands Permissions')
     for app_module_path in settings.INSTALLED_APPS:
         try:
             admin_commands_path = "%s.admincommands" % app_module_path
@@ -28,9 +28,3 @@ def sync_db_callback(verbosity=0, interactive=False, signal=None, **kwargs):
         Permission.objects.get_or_create(
             codename=codename, content_type=ct, name="Can run %s" % subclass.command_name()
         )
-
-
-if django.VERSION >= (1, 7):
-    signals.post_migrate.connect(sync_db_callback, sender=admincommand.models)
-else:
-    signals.post_syncdb.connect(sync_db_callback, sender=admincommand.models)

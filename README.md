@@ -7,30 +7,22 @@ to run Django management commands from the admin.
 
 ## Contributions
 
-This is an enhanced fork, see the original repo: https://github.com/liberation/django-admincommand
-
-First author: `Djaz Team`, with commits from @amirouche, @diox, @lauxley
-
-Django 1.11 compatibility pull request taken from @mgaitan : https://github.com/liberation/django-admincommand/pull/10
+This is an enhanced fork, see the original repo: https://github.com/skorokithakis/django-admincommand
 
 Starting from the fork, changes were made in the following area:
 
-- Forms are built dynamically using parser inspection to detect types.
-- Logs are collected even when using the Python/Django logging module.
-- Asynchronous is not actively supported for now, we have to dig further in.
-- Misc: Pushed to Pypi, linting, code cleanup.
+- Remove dependency on django-sneak
+- Adding correct post-migrate signal for Permissions
 
 ## Dependencies
 
  - django-async (not mandatory): Used to make task asynchronous.
- - django-sneak: Used to bybass Django admin model coupling.
 
 
 ## Installation
 
 For now you can only clone this repo and run `python setup.py develop` (sudo if needed) to setup Django AdminCommand.
 
-(Soon on PyPi)
 
 ## Settings
 
@@ -110,29 +102,4 @@ only see and be able to execute admin commands for which they have the permissio
 
 ## Asynchronous tasks
 
-**This is not actively supported for now, use at your own risk**
-
-If you want to execute commands asynchronously you have to
-specify it in the AdminCommand configuration class with the
-``asynchronous`` property set to ``True``::
-
-```py
-# ./music/admincommands.py
-
-from admincommands.models import AdminCommand
-
-
-class Fugue(AdminCommand):
-
-    asynchronous = True
-
-    class form(forms.Form):
-        title = forms.CharField()
-
-    def get_command_arguments(self, forms_data):
-        return [forms_data['title']], {}
-```
-
-
-You also need to run periodically ``flush_queue`` from ``django-async`` application for that matter don't forget to install the application.
-
+**This is not supported in this version**

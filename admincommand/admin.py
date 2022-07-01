@@ -17,6 +17,7 @@ from admincommand import core
 from admincommand.models import AdminCommandRunInstance, AdminCommand
 from admincommand.query import CommandQuerySet
 
+
 @admin.register(AdminCommand)
 class AdminCommandAdmin(admin.ModelAdmin):
     list_display = ("command_name",)
@@ -38,7 +39,9 @@ class AdminCommandAdmin(admin.ModelAdmin):
     def run_command_view(self, request, url_name):
         admin_command = core.get_admin_commands()[url_name]
 
-        full_permission_codename = "admincommand.%s" % admin_command.permission_codename()
+        full_permission_codename = (
+            "admincommand.%s" % admin_command.permission_codename()
+        )
         if not request.user.has_perm(full_permission_codename):
             return HttpResponseForbidden()
         # original needed ``change_form`` context variables
@@ -60,16 +63,16 @@ class AdminCommandAdmin(admin.ModelAdmin):
         }
 
         if request.method == "POST":
-            form = admin_command.form(request.POST, request.FILES, command=admin_command)
+            form = admin_command.form(
+                request.POST, request.FILES, command=admin_command
+            )
             if form.is_valid():
                 coreponse, instance = core.run_command(
-                    admin_command,
-                    form.cleaned_data,
-                    request.user
+                    admin_command, form.cleaned_data, request.user
                 )
                 if not admin_command.asynchronous:
                     ctx["output"] = coreponse
-                    ctx['instance'] = instance
+                    ctx["instance"] = instance
                     return render(request, "admincommand/output.html", ctx)
                 else:
                     msg = ugettext(
@@ -93,7 +96,12 @@ class AdminCommandAdmin(admin.ModelAdmin):
         the form that of the command
         """
         path = reverse("admin:admincommand_admincommand_changelist")
-        return '<a href="%srun/%s">%s: %s</a>' % (path, obj.url_name(), obj.name(), obj.get_help())
+        return '<a href="%srun/%s">%s: %s</a>' % (
+            path,
+            obj.url_name(),
+            obj.name(),
+            obj.get_help(),
+        )
 
     command_name.allow_tags = True
 
@@ -114,8 +122,14 @@ class AdminCommandAdmin(admin.ModelAdmin):
 
 @admin.register(AdminCommandRunInstance)
 class AdminCommandRunInstanceAdmin(admin.ModelAdmin):
-    list_display = ('command_name', 'runner_user', 'has_exception', 'executed_at', 'finished_at')
-    raw_id_fields = ('runner_user',)
+    list_display = (
+        "command_name",
+        "runner_user",
+        "has_exception",
+        "executed_at",
+        "finished_at",
+    )
+    raw_id_fields = ("runner_user",)
 
     def has_add_permission(self, request, obj=None):
         return False

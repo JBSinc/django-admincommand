@@ -6,7 +6,9 @@ from setuptools import setup
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname), "rb").read().decode("utf8")
+    return (
+        open(os.path.join(os.path.dirname(__file__), fname), "rb").read().decode("utf8")
+    )
 
 
 setup(
@@ -19,5 +21,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["django-sneak", ],
+    install_requires=[
+        "django-sneak",
+    ],
 )

@@ -1,4 +1,3 @@
-
 from admincommand.forms import GenericCommandForm
 from admincommand.utils import generate_human_name
 from admincommand.utils import generate_instance_name
@@ -23,8 +22,8 @@ class AdminCommand(models.Model):
     form = GenericCommandForm
 
     class Meta:
-        verbose_name = 'Wadmin Command'
-        verbose_name_plural = 'Wadmin Commands'
+        verbose_name = "Wadmin Command"
+        verbose_name_plural = "Wadmin Commands"
 
     def __init__(self, *args, **kwargs):
         super(AdminCommand, self).__init__(*args, **kwargs)
@@ -77,16 +76,26 @@ class AdminCommand(models.Model):
 
 
 class AdminCommandRunInstance(models.Model):
-    runner_user = models.ForeignKey('customer.User', on_delete=models.SET_NULL, null=True)
+    runner_user = models.ForeignKey(
+        "customer.User", on_delete=models.SET_NULL, null=True
+    )
     command_name = models.CharField(max_length=200)
     output = models.TextField()
-    has_exception= models.BooleanField()
+    has_exception = models.BooleanField()
     executed_at = models.DateTimeField()
     finished_at = models.DateTimeField(auto_now_add=True)
-    options=models.TextField(blank=True)
+    options = models.TextField(blank=True)
 
     class Meta:
         indexes = [
-            models.Index(fields=['command_name', ]),
-            models.Index(fields=['runner_user', ]),
+            models.Index(
+                fields=[
+                    "command_name",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "runner_user",
+                ]
+            ),
         ]

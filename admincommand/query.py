@@ -45,6 +45,7 @@ class ListQuerySet(object):
         else:
             return self.value[s]
 
+
 class CommandQuerySet(ListQuerySet):
     """
     Custom QuerySet to list runnable commands

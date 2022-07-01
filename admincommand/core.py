@@ -103,7 +103,9 @@ def run_command(command_config, cleaned_data, user):
     if command_config.asynchronous:
         if not callable(schedule):
             return "This task is asynchronous but django-async is not installed"
-        task = schedule(call_command, [command_config.command_name(), user.pk, args, kwargs])
+        task = schedule(
+            call_command, [command_config.command_name(), user.pk, args, kwargs]
+        )
         return task, None
 
     # Synchronous call
@@ -119,22 +121,23 @@ def run_command(command_config, cleaned_data, user):
             has_exception = False
 
         except Exception as ex:
-            value = f'There was an error running this command: {ex}'
+            value = f"There was an error running this command: {ex}"
             has_exception = True
         # Record the run execution
 
     # The logger patch uses <br>, remove these when creating the object
-    clean_value = value.replace('<br>', '')
-    options = ' '.join(o for o in args) + ' '.join(f'{k}:{v}' for k,v in kwargs.items())
+    clean_value = value.replace("<br>", "")
+    options = " ".join(o for o in args) + " ".join(
+        f"{k}:{v}" for k, v in kwargs.items()
+    )
     instance = AdminCommandRunInstance(
         runner_user=user,
-        command_name = command_config.command_name(),
+        command_name=command_config.command_name(),
         output=clean_value,
         has_exception=has_exception,
         executed_at=execution_time,
-        options=options
+        options=options,
     )
     instance.save()
 
     return value, instance
-

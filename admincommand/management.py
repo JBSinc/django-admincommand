@@ -15,7 +15,7 @@ def sync_db_callback(verbosity=0, interactive=False, signal=None, **kwargs):
     to use the app. This needs to be done manually because the app doesn't
     expose any concrete models.
     """
-    print('Post migrate for admin commands Permissions')
+    print("Post migrate for admin commands Permissions")
     for app_module_path in settings.INSTALLED_APPS:
         try:
             admin_commands_path = "%s.admincommands" % app_module_path
@@ -26,5 +26,7 @@ def sync_db_callback(verbosity=0, interactive=False, signal=None, **kwargs):
     for subclass in admincommand.models.AdminCommand.__subclasses__():
         codename = subclass.permission_codename()
         Permission.objects.get_or_create(
-            codename=codename, content_type=ct, name="Can run %s" % subclass.command_name()
+            codename=codename,
+            content_type=ct,
+            name="Can run %s" % subclass.command_name(),
         )

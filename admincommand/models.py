@@ -68,9 +68,9 @@ class AdminCommand(models.Model):
             if value is True:
                 args.append("--" + key)
             elif value is False:
-                pass  # Django commands does not accepts False options to be explicitly set.
+                pass  # Django commands does not accept False options to be explicitly set.
             else:
-                args.append("--" + key + "=" + value)
+                args.append(f"--{key}={value}")
 
         return args, {}
 

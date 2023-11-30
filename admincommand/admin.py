@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from functools import update_wrapper
 
-from django.conf.urls import url
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import csrf_protect_m
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
-from django.utils.encoding import force_text
+from django.urls import re_path, reverse
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext
+from django.utils.translation import gettext
 
 from admincommand import core
 from admincommand.models import AdminCommandRunInstance, AdminCommand
@@ -33,7 +32,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
 
             return update_wrapper(wrapper, view)
 
-        urlpatterns = [url(r"^run/([\w_]+)", wrap(self.run_command_view))]
+        urlpatterns = [re_path(r"^run/([\w_]+)", wrap(self.run_command_view))]
         return urlpatterns + super(AdminCommandAdmin, self).get_urls()
 
     def run_command_view(self, request, url_name):
@@ -52,7 +51,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
 
         ctx = {
             # original needed ``change_form.html`` context variables
-            "module_name": force_text(opts.verbose_name_plural),
+            "module_name": force_str(opts.verbose_name_plural),
             "title": admin_command.name(),
             "is_popup": False,
             "root_path": None,
@@ -75,7 +74,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
                     ctx["instance"] = instance
                     return render(request, "admincommand/output.html", ctx)
                 else:
-                    msg = ugettext(
+                    msg = gettext(
                         "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
                         "and did not achieve it's duty, ask for help"
                     )
